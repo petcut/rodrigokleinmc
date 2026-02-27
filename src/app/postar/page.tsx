@@ -15,6 +15,7 @@ export default function PostarPage() {
   const [authorId, setAuthorId] = useState<string>("");
   const [visibility, setVisibility] = useState<"public" | "followers" | "friends" | "private">("public");
   const [content, setContent] = useState("");
+  const [files, setFiles] = useState<FileList | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -50,10 +51,30 @@ export default function PostarPage() {
     const { data } = await supabase.auth.getUser();
     if (!data.user) return;
 
-    const { error } = await supabase.from("posts").insert({
+    // Uploads (bucket: media)
+const media_urls: string[] = [];
+if (files && files.length > 0) {
+  for (let i = 0; i < Math.min(files.length, 4); i++) {
+    const file = files[i];
+    const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+    const path = `${data.user.id}/${Date.now()}_${i}.${ext}`;
+
+    const up = await supabase.storage.from("media").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+    if (up.error) { setMsg(up.error.message); return; }
+
+    // Se o bucket for PUBLIC, getPublicUrl funciona.
+    const pub = supabase.storage.from("media").getPublicUrl(path);
+    if (pub?.data?.publicUrl) media_urls.push(pub.data.publicUrl);
+  }
+}
+
+const { error } = await supabase.from("posts").insert({
       ...parsed.data,
       owner_profile_id: data.user.id,
-      media_urls: [],
+      media_urls,
     });
 
     if (error) return setMsg(error.message);
@@ -93,6 +114,11 @@ export default function PostarPage() {
             <option value="friends">amigos</option>
             <option value="private">só eu</option>
           </select>
+        </div>
+
+        <div className="field" style={{ marginTop: 12 }}>
+          <label className="small">Mídia (até 4 arquivos)</label>
+          <input type="file" multiple accept="image/*,video/*" onChange={(e) => setFiles(e.target.files)} />
         </div>
 
         <div className="field" style={{ marginTop: 12 }}>

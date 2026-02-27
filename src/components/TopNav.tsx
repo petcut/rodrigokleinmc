@@ -14,6 +14,8 @@ export function TopNav() {
           <Link href="/">Feed</Link>
           <Link href="/pets">Meus pets</Link>
           <Link href="/explorar">Explorar</Link>
+          <Link href="/notificacoes">Notificações</Link>
+          <Link href="/mensagens">Mensagens</Link>
           <Link href="/perfil">Meu perfil</Link>
           <Link href="/sair">Sair</Link>
         </div>

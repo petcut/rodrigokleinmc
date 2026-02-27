@@ -31,13 +31,9 @@ async function getFeed() {
 
   if (!profile) return { posts: [], profileMissing: true };
 
-  // Simple feed MVP: public posts + posts owned by user (for pets)
+  // Feed v0.2: RPC get_feed (públicos + seguidos + seus)
   const { data: posts } = await supabase
-    .from("posts")
-    .select("*")
-    .or(`visibility.eq.public,owner_profile_id.eq.${profile.id}`)
-    .order("created_at", { ascending: false })
-    .limit(50);
+    .rpc("get_feed", { p_profile_id: profile.id });
 
   // Hydrate author label (simple)
   const postsWithLabels = await Promise.all((posts ?? []).map(async (p: any) => {

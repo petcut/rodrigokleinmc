@@ -162,3 +162,26 @@ for delete using (auth.uid() = follower_profile_id);
 
 Se você quiser, eu continuo e te entrego a versão 0.2 com:
 **uploads + feed por follows + notificações**.
+
+
+---
+
+## Versão 0.2 (frescuras a mais) ✅
+Incluído neste pacote:
+- Upload de **fotos/vídeos** no post via **Supabase Storage** (bucket `media`)
+- Feed “de verdade” com **follows** (usa RPC `public.get_feed`)
+- **Notificações automáticas** via triggers (follow, reaction, comment, scrap)
+- **Mensagens (DM)** com threads + realtime (subscribe opcional)
+
+### Storage (bucket `media`)
+No Supabase:
+1. Storage → Create bucket → nome: `media` (public ou private, como preferir)
+2. Se for **public**, o app já consegue mostrar URLs fáceis.
+3. Se for **private**, você vai gerar signed URLs (próximo passo).
+
+Policies sugeridas (bucket public):
+- Permitir insert apenas para usuário logado
+- Permitir read para todos (ou logados)
+
+### Ativar Realtime (para DM)
+No Supabase, habilite Realtime para a tabela `dm_messages`.

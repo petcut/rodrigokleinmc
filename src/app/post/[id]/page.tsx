@@ -54,6 +54,21 @@ export default async function PostPage({ params }: { params: { id: string } }) {
         <div className="hr" />
         <div style={{ whiteSpace: "pre-wrap" }}>{post.content}</div>
 
+        {(post.media_urls && post.media_urls.length > 0) ? (
+          <div className="hr">
+          </div>
+        ) : null}
+        <div className="col">
+          {(post.media_urls ?? []).map((u: string) => (
+            u.includes(".mp4") || u.includes("video") ? (
+              <video key={u} src={u} controls style={{ width: "100%", borderRadius: 12, border: "1px solid rgba(28,34,49,.9)" }} />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={u} src={u} alt="mídia" style={{ width: "100%", borderRadius: 12, border: "1px solid rgba(28,34,49,.9)" }} />
+            )
+          ))}
+        </div>
+
         <div className="hr" />
         <div className="row" style={{ flexWrap: "wrap" }}>
           <span className="small">Reações:</span>
